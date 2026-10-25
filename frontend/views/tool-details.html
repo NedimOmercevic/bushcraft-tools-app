@@ -1,0 +1,57 @@
+<section>
+  <a class="small text-decoration-none" href="#/catalog">&larr; Back to catalog</a>
+  <h1 class="h3 mt-2">Mora Companion</h1>
+  <p class="text-muted">Fixed blade · carbon steel · sample review page</p>
+
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card card-tool">
+        <div class="card-body">
+          <h2 class="h5">Specifications</h2>
+          <ul class="mb-0">
+            <li>Blade: 104 mm carbon steel</li>
+            <li>Handle: TPE rubber, scout-friendly grip</li>
+            <li>Sheath: plastic with belt clip</li>
+            <li>Use: carving, food, fire prep</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card card-tool mt-3">
+        <div class="card-body">
+          <h2 class="h5">Field review</h2>
+          <p>
+            Reliable first bushcraft knife. Holds an edge for feathersticks and batoning small
+            rounds. Keep it oiled — carbon steel will patina. Replace with live reviews from the
+            REST API in a later milestone.
+          </p>
+          <p class="mb-1"><strong>Rating:</strong> 4.6 / 5</p>
+          <p class="mb-0"><strong>Best for:</strong> beginners and backup blades</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-5">
+      <form class="card card-tool">
+        <div class="card-body">
+          <h2 class="h5">Leave a review</h2>
+          <p class="small text-muted">UI only — POST /api/reviews will come later.</p>
+          <div class="mb-3">
+            <label class="form-label" for="review-score">Score</label>
+            <select class="form-select" id="review-score">
+              <option>5 — Excellent</option>
+              <option selected>4 — Good</option>
+              <option>3 — Fair</option>
+              <option>2 — Poor</option>
+              <option>1 — Avoid</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="review-text">Notes</label>
+            <textarea class="form-control" id="review-text" rows="4" placeholder="How did it perform in camp?"></textarea>
+          </div>
+          <button class="btn btn-ember" type="button">Submit review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

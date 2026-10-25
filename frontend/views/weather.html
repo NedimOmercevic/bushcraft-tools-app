@@ -1,0 +1,44 @@
+<section>
+  <h1 class="h3">Weather &amp; camp recommendations</h1>
+  <p class="text-muted">
+    Placeholder for the OpenWeather integration. The backend service will call the external API
+    and return JSON; this view will render conditions and camp tips without leaving the SPA.
+  </p>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card card-tool h-100">
+        <div class="card-body">
+          <h2 class="h5">Current conditions</h2>
+          <p class="display-6 mb-1">— °C</p>
+          <p class="mb-0">Location: not connected yet</p>
+          <p class="small text-muted mt-2 mb-0">
+            Expected payload: temperature, wind, precipitation, and fire-index hints.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card card-tool h-100">
+        <div class="card-body">
+          <h2 class="h5">Camp tips (sample)</h2>
+          <ul class="mb-0">
+            <li>High wind: skip tarp ridge lines facing the gusts; use a low plow point.</li>
+            <li>Rain: prefer a covered stove over an open fire.</li>
+            <li>Dry + wind: extra spark discipline; keep a water bucket at the fire ring.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form class="row g-2 mt-4">
+    <div class="col-sm-8 col-md-6">
+      <label class="form-label" for="weather-city">City or campsite</label>
+      <input class="form-control" id="weather-city" type="text" placeholder="e.g. Sarajevo" disabled />
+    </div>
+    <div class="col-sm-4 col-md-3 d-flex align-items-end">
+      <button class="btn btn-ember w-100" type="button" disabled>Fetch forecast</button>
+    </div>
+  </form>
+</section>
