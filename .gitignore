@@ -1,0 +1,9 @@
+# Local secrets — copy from config.example.php
+backend/config/config.php
+
+# Logs directory (keep folder via .gitkeep)
+backend/logs/*
+!backend/logs/.gitkeep
+
+# PHP dependencies
+vendor/

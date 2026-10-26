@@ -1,0 +1,93 @@
+:root {
+  --bark: #3d2b1f;
+  --forest: #2d4a3e;
+  --moss: #6b8f71;
+  --ember: #c45c26;
+  --cream: #f4ead5;
+  --parchment: #efe4c8;
+  --ink: #1f1712;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font-family: "Source Sans 3", system-ui, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.navbar-bushcraft {
+  background: var(--bark);
+}
+
+.navbar-bushcraft .navbar-brand,
+.navbar-bushcraft .nav-link {
+  color: var(--parchment) !important;
+}
+
+.navbar-bushcraft .nav-link.active {
+  color: #fff !important;
+  border-bottom: 2px solid var(--ember);
+}
+
+.brand-mark {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ember);
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+
+.hero-panel {
+  background:
+    linear-gradient(120deg, rgba(61, 43, 31, 0.88), rgba(45, 74, 62, 0.82)),
+    url("https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?auto=format&fit=crop&w=1600&q=60");
+  background-size: cover;
+  background-position: center;
+  color: var(--cream);
+  border-radius: 1rem;
+}
+
+.btn-ember {
+  background: var(--ember);
+  border-color: var(--ember);
+  color: #fff;
+}
+
+.btn-ember:hover {
+  background: #a64b1d;
+  border-color: #a64b1d;
+  color: #fff;
+}
+
+.card-tool {
+  border: 1px solid #d9cbb0;
+  background: #fffaf0;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card-tool:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0.75rem 1.25rem rgba(61, 43, 31, 0.12);
+}
+
+.badge-wood {
+  background: var(--forest);
+}
+
+.view-loading {
+  min-height: 40vh;
+}
+
+footer.app-footer {
+  background: var(--bark);
+  color: var(--parchment);
+}

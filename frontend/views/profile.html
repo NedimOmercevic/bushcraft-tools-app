@@ -1,0 +1,45 @@
+<section>
+  <h1 class="h3 mb-1">Profile</h1>
+  <p class="text-muted">Static Milestone 1 account page. Later this view will load the logged-in user from the JWT API.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card card-tool">
+        <div class="card-body">
+          <h2 class="h5">Account details</h2>
+          <dl class="row mb-0">
+            <dt class="col-sm-4">Display name</dt>
+            <dd class="col-sm-8">Trail Fox</dd>
+            <dt class="col-sm-4">Email</dt>
+            <dd class="col-sm-8">trailfox@camp.mail</dd>
+            <dt class="col-sm-4">Role</dt>
+            <dd class="col-sm-8"><span class="badge badge-wood">user</span></dd>
+            <dt class="col-sm-4">Member since</dt>
+            <dd class="col-sm-8 mb-0">October 2026</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <form class="card card-tool">
+        <div class="card-body">
+          <h2 class="h5">Change password</h2>
+          <p class="small text-muted">UI only — PUT /api/users/me will come later.</p>
+          <div class="mb-3">
+            <label class="form-label" for="current-password">Current password</label>
+            <input class="form-control" id="current-password" type="password" autocomplete="current-password" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="new-password">New password</label>
+            <input class="form-control" id="new-password" type="password" autocomplete="new-password" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="confirm-password">Confirm new password</label>
+            <input class="form-control" id="confirm-password" type="password" autocomplete="new-password" />
+          </div>
+          <button class="btn btn-ember" type="button">Update password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
