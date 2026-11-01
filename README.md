@@ -145,6 +145,16 @@ The **Weather & camp recommendations** page (`#/weather`) is where the external 
 
 4. Optional: `composer install` in `backend/` (FlightPHP is also vendored under `backend/lib/flightphp/`).
 
+## Run with Wampserver
+
+When the project is in Wampserver's document root (`C:\wamp64\www`), start Wampserver and open:
+
+- Frontend: `http://localhost/frontend/`
+- API health check: `http://localhost/backend/`
+- Tools API: `http://localhost/backend/tools`
+
+The Wampserver root page at `http://localhost/` is left untouched. Apache rewrites API paths through `backend/.htaccess`; the API starts from `backend/api-entry.php`. Import `backend/sql/bushcraft_tools.sql` once and make sure `backend/config/config.php` contains the same local MySQL credentials. Never commit that local config file.
+
 ## Run locally
 
 Frontend (from `frontend/`):
@@ -158,7 +168,7 @@ Open `http://localhost:8766/`.
 API (from `backend/`):
 
 ```bash
-php -S localhost:8080 index.php
+php -S localhost:8080 api-entry.php
 ```
 
 Example:
