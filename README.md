@@ -2,23 +2,25 @@
 
 Web Programming university project: a bushcraft gear catalog with user reviews, favorites, and camp-weather recommendations.
 
-Milestone 1 delivers the folder structure, a static Bootstrap 5 SPA, and a draft database plan. The PHP REST API is not connected yet.
+Milestone 2 delivers the MySQL schema (five entities, primary and foreign keys, sample data) and a PDO DAO layer with REST CRUD.
 
 ## Technology stack
 
 - **Frontend:** vanilla HTML5, CSS, JavaScript (hash-based SPA), Bootstrap 5
-- **Backend (planned):** PHP 8.x, FlightPHP, MySQL via PDO, JWT authentication
+- **Backend:** PHP 8.x, FlightPHP, MySQL via PDO, JWT authentication (JWT wired in a later milestone)
 - **External API (planned):** [OpenWeather](https://openweathermap.org/api) for weather and camp recommendations
 
 ## Folder structure
 
 ```
-backend/          REST API (FlightPHP) — empty in Milestone 1
+backend/
   config/       secrets in config.php (gitignored); template in config.example.php
-  dao/          PDO data access
-  services/     business logic and OpenWeather client
-  routes/       HTTP endpoints
-  middleware/   JWT, logging, errors
+  dao/          PDO data access (BaseDao + one class per entity)
+  sql/          MySQL schema and sample data dump
+  lib/          vendored FlightPHP (used if Composer is unavailable)
+  routes/       REST CRUD endpoints
+  services/     business logic and OpenWeather client (later)
+  middleware/   JWT, logging, errors (later)
   logs/         runtime logs (gitignored except .gitkeep)
 frontend/         static SPA
   css/          theme
@@ -44,50 +46,152 @@ Navigation never reloads `index.html`; `frontend/js/app.js` fetches the matching
 ## Roles
 
 - **user** — register, log in, browse tools, write reviews, save favorites, view own profile
-- **admin** — manage categories and tools (API in later milestones)
+- **admin** — manage categories and tools
 
-## Draft database (5 entities)
+## Database (5 entities)
 
-See `docs/erd.png` and the source sketch in `docs/erd.dbml`.
+See `docs/erd.png`, `docs/erd.dbml`, and the importable dump `backend/sql/bushcraft_tools.sql`.
 
-1. **User** — `id`, `email`, `password_hash`, `display_name`, `role` (`user` \| `admin`)
-2. **Category** — `id`, `name`, `slug` (e.g. axes, knives, ignition)
-3. **Tool** — `id`, `category_id`, `name`, `brand`, `description`, `price`, `stock`
-4. **Review** — `id`, `user_id`, `tool_id`, `rating` (1–5), `comment`
-5. **Favorite** — `id`, `user_id`, `tool_id` (wishlist / saved gear)
+| Entity | Table | Primary key | Foreign keys |
+| --- | --- | --- | --- |
+| User | `users` | `id` | — |
+| Category | `categories` | `id` | — |
+| Tool | `tools` | `id` | `category_id` → `categories.id` |
+| Review | `reviews` | `id` | `user_id` → `users.id`, `tool_id` → `tools.id` |
+| Favorite | `favorites` | `id` | `user_id` → `users.id`, `tool_id` → `tools.id` |
+
+Columns:
+
+1. **users** — `id`, `email` (unique), `password_hash`, `display_name`, `role` (`user` \| `admin`), `created_at`
+2. **categories** — `id`, `name`, `slug` (unique)
+3. **tools** — `id`, `category_id`, `name`, `brand`, `description`, `price`, `stock`
+4. **reviews** — `id`, `user_id`, `tool_id`, `rating` (1–5), `comment`, `created_at`; unique `(user_id, tool_id)`
+5. **favorites** — `id`, `user_id`, `tool_id`, `created_at`; unique `(user_id, tool_id)`
 
 ### Relationships
 
-- Category **1 : N** Tool (`Tool.category_id` → `Category.id`)
-- User **1 : N** Review (`Review.user_id` → `User.id`)
-- Tool **1 : N** Review (`Review.tool_id` → `Tool.id`)
-- User **N : M** Tool through Favorite (`Favorite.user_id`, `Favorite.tool_id`)
-- Unique pair `(user_id, tool_id)` on Favorite so a user cannot star the same tool twice
+- Category **1 : N** Tool
+- User **1 : N** Review
+- Tool **1 : N** Review
+- User **N : M** Tool through Favorite
+
+### Sample accounts (in the SQL dump)
+
+| Email | Password | Role |
+| --- | --- | --- |
+| `admin@bushcraft.local` | `Admin123!` | admin |
+| `mara@bushcraft.local` | `User123!` | user |
+| `jonas@bushcraft.local` | `User123!` | user |
+
+## DAO layer
+
+`App\Dao\BaseDao` holds reusable **getAll / getById / insert / update / delete** methods. Every query uses PDO prepared statements. Column names are limited to a per-entity whitelist so identifiers cannot come from request input.
+
+Entity classes: `UserDao`, `CategoryDao`, `ToolDao`, `ReviewDao`, `FavoriteDao`.
+
+`Database` reads host, port, name, user, and password from `backend/config/config.php` (not committed). Copy `config.example.php` to `config.php` locally.
+
+`UserDao` hashes `password` with `password_hash()` and never returns `password_hash` in JSON.
+
+## REST CRUD
+
+Each entity supports Create (POST), Read (GET), Update (PUT and PATCH), and Delete (DELETE).
+
+| Method | Path | Notes |
+| --- | --- | --- |
+| GET | `/users`, `/users/{id}` | List / one (no password hash) |
+| POST | `/users` | Body: `email`, `password`, `display_name`, optional `role` |
+| PUT / PATCH | `/users/{id}` | PUT expects full resource; PATCH is partial |
+| DELETE | `/users/{id}` | |
+| GET | `/categories`, `/categories/{id}` | |
+| POST | `/categories` | `name`, `slug` |
+| PUT / PATCH | `/categories/{id}` | |
+| DELETE | `/categories/{id}` | Blocked if tools still reference the category (FK RESTRICT) |
+| GET | `/tools`, `/tools/{id}` | Optional `?category_id=` |
+| POST | `/tools` | `category_id`, `name`, `price`, optional `brand`, `description`, `stock` |
+| PUT / PATCH | `/tools/{id}` | |
+| DELETE | `/tools/{id}` | |
+| GET | `/reviews`, `/reviews/{id}` | Optional `?tool_id=` or `?user_id=` |
+| POST | `/reviews` | `user_id`, `tool_id`, `rating` (1–5), optional `comment` |
+| PUT / PATCH | `/reviews/{id}` | |
+| DELETE | `/reviews/{id}` | |
+| GET | `/favorites`, `/favorites/{id}` | Optional `?user_id=` |
+| POST | `/favorites` | `user_id`, `tool_id` |
+| PUT / PATCH | `/favorites/{id}` | |
+| DELETE | `/favorites/{id}` | |
+
+JSON status codes: **200**, **201** (create), **400**, **404**, **500**.
 
 ## OpenWeather (external API)
 
-The **Weather & camp recommendations** page (`#/weather`) is where the external API will appear.
+The **Weather & camp recommendations** page (`#/weather`) is where the external API will appear. No weather calls run in Milestone 2.
 
-Later, a backend service will call OpenWeather (current weather / forecast) using the key in `backend/config/config.php`, then return JSON to the SPA. The frontend will show temperature, wind, and precipitation, plus camp tips (tarp setup, fire restrictions). No weather calls run in Milestone 1.
+## Setup
 
-## Run the SPA locally
+1. Start MySQL (WAMP: start `wampmysqld64`).
+2. Copy config and set credentials:
 
-Views are loaded with `fetch()`, so the frontend must be served over HTTP (not opened as `file://`).
+   ```bash
+   copy backend\config\config.example.php backend\config\config.php
+   ```
 
-From `frontend/`:
+   Default WAMP values: user `root`, empty password, database `bushcraft_tools`.
+
+3. Import schema and sample data:
+
+   ```bash
+   "C:\wamp64\bin\mysql\mysql9.1.0\bin\mysql.exe" -u root < backend\sql\bushcraft_tools.sql
+   ```
+
+4. Optional: `composer install` in `backend/` (FlightPHP is also vendored under `backend/lib/flightphp/`).
+
+## Run with Wampserver
+
+When the project is in Wampserver's document root (`C:\wamp64\www`), start Wampserver and open:
+
+- Frontend: `http://localhost/frontend/`
+- API health check: `http://localhost/backend/`
+- Tools API: `http://localhost/backend/tools`
+
+The Wampserver root page at `http://localhost/` is left untouched. Apache rewrites API paths through `backend/.htaccess`; the API starts from `backend/api-entry.php`. Import `backend/sql/bushcraft_tools.sql` once and make sure `backend/config/config.php` contains the same local MySQL credentials. Never commit that local config file.
+
+## Run locally
+
+Frontend (from `frontend/`):
 
 ```bash
 php -S localhost:8766
 ```
 
-Then open `http://localhost:8766/`.
+Open `http://localhost:8766/`.
 
-Copy `backend/config/config.example.php` to `backend/config/config.php` when you add database, JWT, and OpenWeather secrets. Do not commit `config.php`.
+API (from `backend/`):
+
+```bash
+php -S localhost:8080 api-entry.php
+```
+
+Example:
+
+```bash
+curl http://localhost:8080/tools
+curl -X POST http://localhost:8080/categories -H "Content-Type: application/json" -d "{\"name\":\"Saws\",\"slug\":\"saws\"}"
+```
+
+Do not commit `backend/config/config.php`.
 
 ## Milestone 1 deliverables
 
 - Project structure and `.gitignore`
 - Static SPA with consistent bushcraft theme and responsive Bootstrap layout
 - Draft ERD (`docs/erd.png`)
-- This README draft
+- README draft
 - AI usage log (`docs/AI_LOG.md`)
+
+## Milestone 2 deliverables
+
+- MySQL dump with five entities and sample data: `backend/sql/bushcraft_tools.sql`
+- Documented schema / ERD (`docs/erd.png`, `docs/erd.dbml`)
+- `BaseDao` plus DAO classes for all five entities
+- REST CRUD (GET, POST, PUT, PATCH, DELETE) using prepared statements
+- Credentials loaded from `config.php`; `config.example.php` is what is committed
