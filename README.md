@@ -8,7 +8,7 @@ Milestone 2 delivers the MySQL schema (five entities, primary and foreign keys, 
 
 - **Frontend:** vanilla HTML5, CSS, JavaScript (hash-based SPA), Bootstrap 5
 - **Backend:** PHP 8.x, FlightPHP, MySQL via PDO, JWT authentication (JWT wired in a later milestone)
-- **External API (planned):** [OpenWeather](https://openweathermap.org/api) for weather and camp recommendations
+- **External API:** [OpenWeather](https://openweathermap.org/api) for weather and camp recommendations
 
 ## Folder structure
 
@@ -19,7 +19,7 @@ backend/
   sql/          MySQL schema and sample data dump
   lib/          vendored FlightPHP (used if Composer is unavailable)
   routes/       REST CRUD endpoints
-  services/     business logic and OpenWeather client (later)
+  services/     business logic and OpenWeather client
   middleware/   JWT, logging, errors (later)
   logs/         runtime logs (gitignored except .gitkeep)
 frontend/         static SPA
@@ -39,7 +39,7 @@ docs/             AI log and ERD
 | `#/catalog` | Tools catalog | Entity list (axes, knives, firesteels, …) |
 | `#/details` | Tool details / review | Entity detail + review form |
 | `#/profile` | Profile | Name, email, role, change password |
-| `#/weather` | Weather & camp tips | Placeholder for OpenWeather |
+| `#/weather` | Weather & camp tips | Current conditions and camp tips |
 
 Navigation never reloads `index.html`; `frontend/js/app.js` fetches the matching view into `#view-root`.
 
@@ -124,7 +124,14 @@ JSON status codes: **200**, **201** (create), **400**, **404**, **500**.
 
 ## OpenWeather (external API)
 
-The **Weather & camp recommendations** page (`#/weather`) is where the external API will appear. No weather calls run in Milestone 2.
+On **Weather & camp recommendations** (`#/weather`), enter a city such as `Sarajevo,BA`.
+The frontend requests `GET /backend/weather?city=Sarajevo%2CBA`. The service fetches current conditions
+from OpenWeather and derives gear tips from temperature, wind and precipitation.
+
+Enable PHP cURL and put your active OpenWeather key in `openweather.api_key` in
+`backend/config/config.php`. The key stays on the server. Give PHP write access to
+`backend/logs/` for the provider error log. Weather failures show an error on the weather page
+while the rest of the SPA remains available.
 
 ## Setup
 
@@ -152,33 +159,24 @@ When the project is in Wampserver's document root (`C:\wamp64\www`), start Wamps
 - Frontend: `http://localhost/frontend/`
 - API health check: `http://localhost/backend/`
 - Tools API: `http://localhost/backend/tools`
+- Swagger UI: `http://localhost/backend/swagger/`
 
 The Wampserver root page at `http://localhost/` is left untouched. Apache rewrites API paths through `backend/.htaccess`; the API starts from `backend/api-entry.php`. Import `backend/sql/bushcraft_tools.sql` once and make sure `backend/config/config.php` contains the same local MySQL credentials. Never commit that local config file.
 
 ## Run locally
 
-Frontend (from `frontend/`):
+Run this from the repository root after setting up MySQL and `config.php`:
 
 ```bash
-php -S localhost:8766
+php -S localhost:8080 serve.php
 ```
 
-Open `http://localhost:8766/`.
+- Frontend: [localhost:8080/frontend/](http://localhost:8080/frontend/)
+- Swagger UI: [localhost:8080/backend/swagger/](http://localhost:8080/backend/swagger/)
+- Example API call: `curl http://localhost:8080/backend/tools?category_id=1`
 
-API (from `backend/`):
-
-```bash
-php -S localhost:8080 api-entry.php
-```
-
-Example:
-
-```bash
-curl http://localhost:8080/tools
-curl -X POST http://localhost:8080/categories -H "Content-Type: application/json" -d "{\"name\":\"Saws\",\"slug\":\"saws\"}"
-```
-
-Do not commit `backend/config/config.php`.
+This milestone is for local development. JWT authentication, protected routes with
+401/403 responses, and role-based UI are scheduled for Milestone 4.
 
 ## Milestone 1 deliverables
 
@@ -195,3 +193,13 @@ Do not commit `backend/config/config.php`.
 - `BaseDao` plus DAO classes for all five entities
 - REST CRUD (GET, POST, PUT, PATCH, DELETE) using prepared statements
 - Credentials loaded from `config.php`; `config.example.php` is what is committed
+
+
+## Milestone 3 deliverables
+
+- Entity services validate data before calling the existing DAOs. Database uniqueness and
+  foreign-key errors become JSON 400 responses.
+- FlightPHP exposes list, create, get by ID, replace, patch and delete routes for users,
+  categories, tools, reviews and favorites.
+- [OpenAPI specification](backend/openapi.json) and the Swagger UI paths above.
+- OpenWeather endpoint and connected weather view with current conditions and camp tips.

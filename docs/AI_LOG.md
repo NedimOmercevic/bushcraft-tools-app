@@ -42,3 +42,19 @@
 - **What was wrong**: `composer install` for FlightPHP failed (Avast MITM / missing local CA). A first `UserDao` also returned `password_hash` on GET because it reused `BaseDao::getAll()` unchanged.
 - **How I noticed it**: Composer exited with curl error 60. A trial JSON payload for `GET /users` still contained bcrypt hashes.
 - **How I fixed it**: Vendored FlightPHP 3.16.1 under `backend/lib/flightphp/` and added `backend/autoload.php` so the API runs without Packagist. `UserDao` hashes a `password` field with `password_hash()` and strips `password_hash` from every read. Credentials stay in gitignored `config.php`; only `config.example.php` is committed.
+
+
+## Milestone 3: Services, Routes, OpenAPI and External API
+
+- **Tool used:** ChatGPT Codex helped implement and verify entity services, FlightPHP CRUD routes,
+  Swagger documentation and the OpenWeather integration.
+- **Prompt:** Use the attached Milestone 3 requirements and the existing Bushcraft Tools repository.
+
+### AI-generated issues found during review
+
+1. The first local router checked whether a resolved path started with `frontend/`. The
+   directory itself resolved to `frontend` without a trailing slash, so opening `/frontend/`
+   would miss the frontend entry point. The router now directs that path to `index.html`.
+2. The first router set Flight's `flight.base_url` setting for matching API routes. Checking
+   Flight's request class showed that the prefix is stripped based on `SCRIPT_NAME`. The
+   local router now sets that value to the backend entry point before starting Flight.

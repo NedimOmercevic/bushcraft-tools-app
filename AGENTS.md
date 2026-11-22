@@ -26,3 +26,8 @@ Bushcraft Tools Management Application - A Single Page Application (SPA) built w
 - DO NOT render server-side HTML; keep the REST API pure JSON.
 - Standardize REST HTTP response status codes (200, 201, 400, 401, 403, 404, 500).
 - Always use PDO prepared statements to prevent SQL Injection.
+## Milestone 3 conventions
+
+- Route handlers call services. Services validate inputs, apply business rules and call DAOs.
+- Update the OpenAPI specification when request fields, response shapes, or API paths change.
+- Keep the OpenWeather key in local configuration and exclude it from responses and logs.

@@ -3,13 +3,12 @@
 declare(strict_types=1);
 
 spl_autoload_register(static function (string $class): void {
-    $prefix = 'App\\Dao\\';
-    if (!str_starts_with($class, $prefix)) {
+    $parts = explode('\\', $class);
+    if (count($parts) !== 3 || $parts[0] !== 'App' || !in_array($parts[1], ['Dao', 'Services'], true)) {
         return;
     }
 
-    $relative = str_replace('\\', '/', substr($class, strlen($prefix)));
-    $file = __DIR__ . '/dao/' . $relative . '.php';
+    $file = __DIR__ . '/' . strtolower($parts[1]) . '/' . $parts[2] . '.php';
     if (is_readable($file)) {
         require $file;
     }
