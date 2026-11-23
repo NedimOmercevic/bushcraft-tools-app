@@ -1,0 +1,17 @@
+{
+    "name": "bushcraft/tools-app",
+    "description": "Bushcraft Tools REST API (FlightPHP + PDO)",
+    "type": "project",
+    "require": {
+        "php": ">=8.1",
+        "flightphp/core": "^3.16"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Dao\\": "dao/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,9 @@
+RewriteEngine On
+
+DirectoryIndex api-entry.php
+
+RewriteRule ^(?:config|dao|lib|logs|routes|services|sql|vendor)(?:/|$) - [R=404,L,NC]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ api-entry.php [QSA,L]

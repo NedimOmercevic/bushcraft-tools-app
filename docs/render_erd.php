@@ -19,8 +19,8 @@ if (!is_readable($fontb)) {
 }
 
 imagefilledrectangle($im, 0, 0, $w, $h, $cream);
-imagettftext($im, 22, 0, 40, 48, $bark, $fontb, 'Bushcraft Tools — Draft ERD (Milestone 1)');
-imagettftext($im, 12, 0, 40, 74, $forest, $font, 'Planning only. Five entities: User, Category, Tool, Review, Favorite.');
+imagettftext($im, 22, 0, 40, 48, $bark, $fontb, 'Bushcraft Tools — ERD (Milestone 2)');
+imagettftext($im, 12, 0, 40, 74, $forest, $font, 'MySQL InnoDB. Five entities with primary keys, foreign keys, and unique constraints.');
 
 function entityBox($im, $x, $y, $bw, $bh, $title, $rows, $header, $body, $ink, $font, $fontb) {
     imagefilledrectangle($im, $x, $y, $x + $bw, $y + $bh, $body);
